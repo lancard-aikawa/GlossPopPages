@@ -25,7 +25,13 @@ GlossPop のビューアで、そのフォルダを開いてから:
 
 | | |
 | --- | --- |
-| [戦国時代](https://lancard-aikawa.github.io/GlossPopPages/%E6%88%A6%E5%9B%BD%E6%99%82%E4%BB%A3/) | 史実と諸説の並記を試した辞書（25 語 / 関係 40 本）。素材は [GlossPop の samples](https://github.com/lancard-aikawa/GlossPop/tree/main/samples/%E6%88%A6%E5%9B%BD%E6%99%82%E4%BB%A3) |
+| [戦国時代](https://lancard-aikawa.github.io/GlossPopPages/sengoku/) | 史実と諸説の並記を試した辞書（25 語 / 関係 40 本）。素材は [GlossPop の samples](https://github.com/lancard-aikawa/GlossPop/tree/main/samples/%E6%88%A6%E5%9B%BD%E6%99%82%E4%BB%A3) |
+
+**フォルダ名は英数字にする。** 日本語のままだと、貼った先が URL を
+percent-encode せずに取りに来たときに **404 になってカードが出ない**
+（実測: 生の日本語 URL は GitHub Pages が 404 を返す。ブラウザは送る前に
+encode するので、打ち込むぶんには通ってしまい気付きにくい）。
+GlossPop の公開ダイアログに名前の欄がある。
 
 ## GitHub Pages の設定
 
