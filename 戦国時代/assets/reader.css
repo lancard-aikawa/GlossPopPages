@@ -1,0 +1,1952 @@
+:root {
+  --bg: #fbfbfa;
+  --panel: #ffffff;
+  --panel-2: #f4f4f2;
+  --border: #e2e2dd;
+  --border-strong: #c9c9c2;
+  --fg: #1c1c1a;
+  --fg-dim: #63635e;
+  --fg-faint: #8d8d86;
+  --accent: #0f766e;
+  --accent-soft: #d7efec;
+  --accent-fg: #ffffff;
+  --danger: #b4321f;
+  --warn: #8a5a00;
+  --radius: 8px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 8px 24px rgba(0, 0, 0, .08);
+  --mono: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, "Noto Sans Mono CJK JP", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", "Yu Gothic UI", "Hiragino Sans",
+          "Noto Sans JP", Meiryo, sans-serif;
+
+  /* 文字の大きさ。**動かすのは `--fs-base` だけ**で、上も下も同じ比で付いてくる。
+     ⚙ の「文字の大きさ」がこれを書き換える。
+
+     名前の数字は**既定 (15px) でのピクセル数**で、比もそこから作ってあるので、
+     既定では今までと 1px も変わらない。生の px を書かないこと —— **その 1 か所
+     だけ設定に付いてこない**（小さい注記や大きい見出しを足すたびに踏む）。
+     大きさを足すときも、ここに 1 行足してから使う。
+
+     **相関図の SVG は例外**（`.rel-node text` などの `font:` の項を見ること）。 */
+  --fs-base: 15px;
+  --fs-9:  calc(var(--fs-base) *  9 / 15);
+  --fs-10: calc(var(--fs-base) * 10 / 15);
+  --fs-11: calc(var(--fs-base) * 11 / 15);
+  --fs-12: calc(var(--fs-base) * 12 / 15);
+  --fs-13: calc(var(--fs-base) * 13 / 15);
+  --fs-14: calc(var(--fs-base) * 14 / 15);
+  --fs-15: var(--fs-base);
+  --fs-16: calc(var(--fs-base) * 16 / 15);
+  --fs-18: calc(var(--fs-base) * 18 / 15);
+}
+
+/* 文字の大きさは 4 段階。**既定 (`medium`) は属性を書かない**ので、上の 15px が
+   そのまま効く（テーマの `system` と同じ扱い）。テーマと同じく**描画の前に**
+   当てること —— あとから当てると、開くたびに一度小さい字で描いてから飛ぶ。
+   当てているのは各 HTML の head のインライン script で、本体は base.js。 */
+:root[data-fontsize="small"]  { --fs-base: 13px; }
+:root[data-fontsize="large"]  { --fs-base: 17px; }
+:root[data-fontsize="xlarge"] { --fs-base: 19px; }
+
+/* テーマは 3 通り: OS に合わせる (data-theme 無し) / light / dark。
+   **下の 2 つのダークの値は同じ内容を保つこと。** CSS にはブロックを再利用する
+   手段が無いので複製している。片方だけ直すと「OS がダークのときだけ色が違う」
+   という気づきにくい壊れ方をする。 */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #17181a;
+    --panel: #1f2124;
+    --panel-2: #262a2e;
+    --border: #33373c;
+    --border-strong: #4a5057;
+    --fg: #e7e7e4;
+    --fg-dim: #a6a8a5;
+    --fg-faint: #7c7f7c;
+    --accent: #5eead4;
+    --accent-soft: #17403c;
+    --accent-fg: #0a1f1d;
+    --danger: #ff8a75;
+    --warn: #e0b25c;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px rgba(0, 0, 0, .45);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #17181a;
+  --panel: #1f2124;
+  --panel-2: #262a2e;
+  --border: #33373c;
+  --border-strong: #4a5057;
+  --fg: #e7e7e4;
+  --fg-dim: #a6a8a5;
+  --fg-faint: #7c7f7c;
+  --accent: #5eead4;
+  --accent-soft: #17403c;
+  --accent-fg: #0a1f1d;
+  --danger: #ff8a75;
+  --warn: #e0b25c;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px rgba(0, 0, 0, .45);
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--sans);
+  font-size: var(--fs-15);
+  line-height: 1.75;
+  display: flex;
+  flex-direction: column;
+}
+
+a { color: var(--accent); }
+
+/* ---------------------------------------------------------------- header */
+
+.topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  font-weight: 700;
+  font-size: var(--fs-16);
+  letter-spacing: .02em;
+  text-decoration: none;
+  color: var(--fg);
+  white-space: nowrap;
+}
+.brand span { color: var(--accent); }
+
+.topnav { display: flex; gap: 4px; }
+/* 見た目がボタンなので、ボタンと同じく折り返さない (`button, .btn` の項) */
+.topnav a {
+  padding: 4px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--fg-dim);
+  font-size: var(--fs-13);
+  white-space: nowrap;
+}
+.topnav a:hover { background: var(--panel-2); color: var(--fg); }
+.topnav a[aria-current="page"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+.topbar .spacer { flex: 1; }
+.topbar .meta { font-size: var(--fs-12); color: var(--fg-faint); white-space: nowrap; }
+
+/* 設定。ナビの直後に置くが、ページ移動ではないので区切り線で少し離す */
+.topbar-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 4px;
+  padding: 4px 12px 4px 14px;
+  border: 0;
+  border-left: 1px solid var(--border);
+  border-radius: 0 999px 999px 0;
+  background: transparent;
+  /* ナビのリンクより濃くする。同じ色だと「押せるもの」に見えない */
+  color: var(--fg);
+  font-family: inherit;
+  font-size: var(--fs-13);
+  cursor: pointer;
+}
+.topbar-action:hover { background: var(--panel-2); }
+.topbar-action:hover .topbar-action-icon { transform: rotate(30deg); }
+.topbar-action:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.topbar-action-icon {
+  font-size: var(--fs-15);
+  line-height: 1;
+  color: var(--accent);
+  transition: transform .15s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .topbar-action-icon { transition: none; }
+  .topbar-action:hover .topbar-action-icon { transform: none; }
+}
+/* 幅が足りないときは歯車だけにする（ナビが折り返して崩れるより良い）。
+   ボタンの文字は折り返さない＝縮まないので、足りないぶんは間隔を詰め、
+   無くても困らない語数を落とす（ここを削らないと横スクロールが出る） */
+@media (max-width: 640px) {
+  .topbar-action span:not(.topbar-action-icon) { display: none; }
+  .topbar-action { padding: 4px 10px; }
+  .topbar { gap: 10px; }
+  .topbar .meta { display: none; }
+}
+
+/* ---------------------------------------------------------------- layout */
+
+.layout {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) 240px;
+  min-height: 0;
+}
+
+.layout > * { min-width: 0; overflow: auto; }
+
+.side {
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  padding: 14px;
+}
+.side.right { border-right: 0; border-left: 1px solid var(--border); }
+
+.side h2 {
+  font-size: var(--fs-11);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--fg-faint);
+  margin: 18px 0 8px;
+}
+.side h2:first-child { margin-top: 0; }
+
+main.doc-wrap { padding: 28px 40px 120px; }
+
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: 240px minmax(0, 1fr); }
+  .side.right { display: none; }
+}
+@media (max-width: 760px) {
+  .layout { grid-template-columns: 1fr; }
+  .side { border-right: 0; border-bottom: 1px solid var(--border); }
+  main.doc-wrap { padding: 20px 16px 100px; }
+}
+
+/* ---------------------------------------------------------------- controls */
+
+/* button などに display を指定しているので、UA スタイルの [hidden] が負ける。
+   これが無いと JS 側の `node.hidden = true` が効かず、要素が出たままになる */
+[hidden] { display: none !important; }
+
+/* **ボタンの文字は決して折り返さない。** 幅が足りないとき、詰めて縦に割れた
+   ラベル（「保 / 存」）は読めないし、押せる範囲も分からなくなる。狭いところでは
+   ボタン自体を折り返すか (`flex-wrap: wrap`)、ラベルを削ること。
+   `flex-shrink: 0` が対（無いと flex の行で潰されて、nowrap の文字が枠から溢れる）。
+   長い名前が入りうるもの（ファイル一覧・統合の候補）は個別に `…` で切る —— 折り返しに
+   戻さないこと。ここを 1 か所で決めているので、ボタンごとに nowrap を書き足さない */
+button, .btn {
+  font: inherit;
+  font-size: var(--fs-13);
+  padding: 6px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+  color: var(--fg);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.4;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+button:hover, .btn:hover { border-color: var(--accent); color: var(--accent); }
+button:disabled { opacity: .5; cursor: default; }
+button:disabled:hover { border-color: var(--border-strong); color: var(--fg); }
+
+button.primary, .btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 600;
+}
+button.primary:hover { filter: brightness(1.08); color: var(--accent-fg); }
+button.ghost { background: transparent; border-color: transparent; color: var(--fg-dim); }
+button.danger { color: var(--danger); border-color: var(--border-strong); }
+button.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+input[type="text"], input[type="search"], textarea, select {
+  font: inherit;
+  font-size: var(--fs-13);
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--fg);
+}
+textarea { line-height: 1.6; resize: vertical; }
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+label.field { display: block; margin-bottom: 10px; }
+label.field > span {
+  display: block;
+  font-size: var(--fs-11);
+  letter-spacing: .04em;
+  color: var(--fg-dim);
+  margin-bottom: 3px;
+}
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.hint { font-size: var(--fs-11); color: var(--fg-faint); margin: 4px 0 0; }
+
+label.check {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--fs-12);
+  color: var(--fg-dim);
+  cursor: pointer;
+  line-height: 1.4;
+}
+label.check input { accent-color: var(--accent); margin: 0; }
+/* ボタンは縮まないので、幅は入力欄と `.wide` の側で吸収する（どちらも縮む）。
+   **ここを `flex-wrap: wrap` にしないこと** —— `.wide` は幅 100% なので、
+   横に並ぶ小さなボタン（お気に入りの ☆）が必ず次の行へ落ちる */
+.check-row { display: flex; gap: 6px; align-items: center; }
+
+/* 幅いっぱいに広げるもの。**縮んでよい**（`button` の `flex-shrink: 0` を戻す）——
+   横に別のボタンが並ぶ行 (`.check-row`) で縮めないと、行が枠から溢れて隣のボタンが
+   画面外へ出る。文字は折り返さないままなので、詰まっても縦には割れない */
+.wide { width: 100%; min-width: 0; flex-shrink: 1; }
+.auto-width { width: auto; }
+.gap-top { margin-top: 6px; }
+button.icon { padding: 0 5px; }
+.toolbar .spacer { flex: 1; }
+
+/* ⋯ メニュー。**たまに使う操作と、消える操作の置き場所**（→ CLAUDE.md の
+   「操作の置き場所は 4 つしかない」）。中身は `base.js` の `menuButton()` が作る
+   ので、ここは形だけ。**画面ごとに別のクラスを足さないこと** —— 見た目が分かれると
+   「⋯ を押せば同じものが出る」という約束が崩れる */
+.menu-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
+/* **`line-height` を詰めないこと。** `⋯` は文字なので、行の高さを 1 にすると
+   字の箱が枠から溢れて「折り返している」と判定される（見た目は変わらないので
+   画面では気付けない。スモークテストの `_WRAPPED_LABELS` が捕まえた）。
+   ほかのボタンと同じ 1.4 のままにして、大きさは font-size だけで決める */
+.menu-open { font-size: var(--fs-15); padding: 4px 8px; }
+.menu-pop {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 60;
+  min-width: 190px;
+  padding: 5px;
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .16);
+}
+/* 項目は幅いっぱいの左揃え。**折り返しは button の nowrap のままでよい** ——
+   ラベルは短いものだけを入れる（長い説明は title に置く） */
+/* **リンクの項目もボタンと同じ見た目にする**（`.btn` は付けない —— 枠のある
+   ボタンになる）。下線と青字のままだと、同じメニューの中で 1 行だけ別物に見える */
+.menu-pop .menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: none;
+  padding: 7px 10px;
+  font: inherit;
+  font-size: var(--fs-13);
+  line-height: 1.4;
+  color: var(--fg);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.menu-pop .menu-item:hover, .menu-pop .menu-item:focus-visible {
+  background: var(--panel-2);
+  border-color: transparent;
+  color: var(--accent);
+}
+/* 区切り線の下は**消える操作**。混ぜると削除が編集と同じ重さに見える */
+.menu-pop .menu-sep { height: 1px; margin: 5px 4px; background: var(--border); }
+.menu-pop .menu-item.danger { color: var(--danger); }
+.menu-pop .menu-item.danger:hover, .menu-pop .menu-item.danger:focus-visible { color: var(--danger); }
+
+/* 見せ方のタブ。**同じものを別の見方で出すときだけ**使う（置き換えではないことを
+   画面に出すための形）。`.sheet-tabs` と同じ色の作りにしてあるが、あちらは
+   ダイアログの中、こちらはページの本文。**タブを disabled にしないこと** ——
+   押せて理由が出る形にする（押せないタブは、なぜ押せないのかを言う場所が無い） */
+.view-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+/* **選ばれていないタブはリンク**（画面をまたぐ ＝ 覆いに拾わせるため）。
+   `button` と `a` で見た目が変わらないよう、`[role=tab]` でまとめて当てる ——
+   分けると、いま居るタブだけ枠のあるボタンで残りが青い下線、になる */
+.view-tabs [role="tab"] {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: none;
+  color: var(--fg-dim);
+  font: inherit;
+  font-size: var(--fs-13);
+  line-height: 1.4;
+  padding: 7px 14px;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+.view-tabs [role="tab"]:hover { color: var(--fg); }
+.view-tabs [role="tab"][aria-selected="true"] {
+  background: var(--panel);
+  border-color: var(--border);
+  color: var(--fg);
+  font-weight: 600;
+}
+
+/* ドラッグ中のハイライト */
+body.dropping::after {
+  content: "ここにドロップして開く";
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 118, 110, .12);
+  border: 3px dashed var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+  pointer-events: none;
+}
+
+/* file list / term list */
+
+.filelist, .termlist { list-style: none; margin: 0; padding: 0; }
+.filelist li, .termlist li { margin-bottom: 2px; }
+
+/* ファイル名と章名は長くなりうるが、ボタンなので折り返さない。溢れたぶんは `…` で
+   切る（全体は `title` に入れてある）。`display: block` なのは、inline-flex のままだと
+   中の文字が匿名のフレックス項目になって text-overflow が効かないため */
+.filelist button {
+  display: block;
+  width: 100%;
+  border-color: transparent;
+  background: transparent;
+  font-size: var(--fs-13);
+  text-align: left;
+  padding: 4px 8px;
+  color: var(--fg-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.filelist button:hover { background: var(--panel-2); color: var(--fg); }
+.filelist button[aria-current="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* 取り込み前の控え。1 行に「開く」と「捨てる」が並ぶので、開くほうだけ伸ばす
+   （`.filelist button` は width: 100% なので、包む側で幅を持たせる） */
+.backup-row + .backup-row { margin-top: 2px; }
+.backup-head { display: flex; align-items: center; gap: 4px; }
+.backup-head > button:first-child { min-width: 0; flex: 1 1 auto; }
+/* **横に並ぶ小さいボタンは `width: auto` に戻す。** `.filelist button` は
+   `width: 100%` なので、そのままだと隣（開くボタン・用語名）を 0 幅まで潰す
+   （ボタンは縮まないので、潰れるのは必ず隣のほう。実際に潰れた） */
+.backup-head > button + button,
+.backup-entry button { width: auto; flex: 0 0 auto; }
+.backup-inside {
+  margin: 2px 0 6px 12px;
+  padding-left: 8px;
+  border-left: 2px solid var(--border);
+}
+.backup-entry { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+/* 用語名は長くなりうる。ボタンは折り返さないので、切るのはこちら */
+.backup-ref {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--fs-13);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.backup-entry .hint { font-size: var(--fs-12); }
+
+/* 本文の横断検索。抜粋は折り返して読ませる (ファイル名の 1 行とは別物) */
+.search-results { margin-bottom: 10px; }
+.search-file + .search-file { margin-top: 8px; }
+.search-file h3 {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-size: var(--fs-12);
+  margin: 0 0 4px;
+  color: var(--fg);
+}
+.search-file h3 .count { color: var(--fg-faint); font-weight: 400; }
+/* ここだけがボタンで折り返す。中身はラベルではなく本文の抜粋で、1 行に切ると
+   何にヒットしたのか分からなくなる。**ラベルを持つボタンには広げないこと** */
+.search-results .filelist button {
+  display: block;
+  white-space: normal;
+  line-height: 1.5;
+}
+.search-results .loc {
+  display: block;
+  color: var(--fg-faint);
+  font-size: var(--fs-11);
+}
+
+.termlist a {
+  display: block;
+  padding: 5px 8px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--fg);
+  font-size: var(--fs-13);
+}
+.termlist a:hover { background: var(--panel-2); }
+.termlist .cat { display: block; font-size: var(--fs-10); color: var(--fg-faint); }
+
+.empty { font-size: var(--fs-12); color: var(--fg-faint); padding: 4px 0; }
+
+/* ---------------------------------------------------------------- document */
+
+.doc {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.doc > :first-child { margin-top: 0; }
+.doc h1, .doc h2, .doc h3, .doc h4 { line-height: 1.4; margin: 1.8em 0 .6em; }
+.doc h1 { font-size: 1.7em; border-bottom: 1px solid var(--border); padding-bottom: .3em; }
+.doc h2 { font-size: 1.35em; }
+.doc h3 { font-size: 1.12em; }
+.doc p, .doc li { overflow-wrap: anywhere; }
+.doc pre {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  overflow-x: auto;
+  font-size: var(--fs-13);
+}
+.doc code { font-family: var(--mono); font-size: .9em; }
+.doc :not(pre) > code {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: .1em .35em;
+}
+.doc blockquote {
+  margin: 1em 0;
+  padding: .2em 1em;
+  border-left: 3px solid var(--border-strong);
+  color: var(--fg-dim);
+}
+.doc table { border-collapse: collapse; width: 100%; font-size: var(--fs-14); display: block; overflow-x: auto; }
+.doc th, .doc td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
+.doc th { background: var(--panel-2); }
+.doc img { max-width: 100%; }
+.doc hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+
+/* ------------------------------------------------------------ gloss links */
+
+a.gloss-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dashed var(--accent);
+  background: linear-gradient(transparent 62%, var(--accent-soft) 62%);
+  cursor: help;
+  padding: 0 1px;
+}
+a.gloss-link:hover, a.gloss-link:focus-visible {
+  color: var(--accent);
+  border-bottom-style: solid;
+  outline: none;
+}
+/* 強調などで語が分断されたときの断片。余白を消して 1 続きに見せる */
+a.gloss-link.gloss-split { padding: 0; }
+
+/* ---------------------------------------------------------------- popup */
+
+.gloss-pop {
+  position: fixed;
+  z-index: 900;
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(60vh, 420px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  font-size: var(--fs-13);
+  line-height: 1.7;
+}
+.gloss-pop[hidden] { display: none; }
+.gloss-pop .pop-main { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 12px 14px; }
+.gloss-pop .pop-cat {
+  font-size: var(--fs-10);
+  letter-spacing: .06em;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 1px 8px;
+  display: inline-block;
+}
+.gloss-pop .pop-term { font-size: var(--fs-15); font-weight: 700; margin: 6px 0 0; }
+.gloss-pop .pop-count {
+  font-size: var(--fs-10);
+  font-weight: 600;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  vertical-align: 2px;
+}
+
+/* 同名が複数あるときのアコーディオン */
+.gloss-pop .pop-item { border-top: 1px solid var(--border); }
+.gloss-pop .pop-item:first-of-type { margin-top: 8px; }
+.gloss-pop .pop-item > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 7px 0 7px 16px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gloss-pop .pop-item > summary::-webkit-details-marker { display: none; }
+.gloss-pop .pop-item > summary::before {
+  content: "▶";
+  position: absolute;
+  left: 0;
+  font-size: var(--fs-9);
+  color: var(--fg-faint);
+  transition: transform .12s ease;
+}
+.gloss-pop .pop-item[open] > summary::before { transform: rotate(90deg); }
+@media (prefers-reduced-motion: reduce) {
+  .gloss-pop .pop-item > summary::before { transition: none; }
+}
+.gloss-pop .pop-item > summary:hover { background: var(--panel-2); }
+.gloss-pop .pop-item-body { padding: 0 0 10px 16px; }
+.gloss-pop .pop-item-body .pop-summary { margin-top: 0; }
+.gloss-pop .pop-item-link { margin: 8px 0 0; }
+.gloss-pop .pop-item-link a { font-size: var(--fs-12); font-weight: 600; text-decoration: none; }
+.gloss-pop .pop-reading { font-size: var(--fs-11); color: var(--fg-faint); font-weight: 400; margin-left: 6px; }
+.gloss-pop .pop-summary { margin: 6px 0 0; }
+.gloss-pop .pop-body { margin: 8px 0 0; color: var(--fg-dim); border-top: 1px solid var(--border); padding-top: 8px; }
+.gloss-pop .pop-body > :first-child { margin-top: 0; }
+.gloss-pop .pop-body > :last-child { margin-bottom: 0; }
+.gloss-pop .pop-body pre { display: none; }
+.gloss-pop .pop-foot {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--panel-2);
+}
+.gloss-pop .pop-foot a { font-size: var(--fs-12); font-weight: 600; text-decoration: none; }
+/* 吹き出しの中の語を辿ったときの戻り道。中身の上に置く（辿った先でも
+   「どこから来たか」が本文より先に目に入る） */
+.gloss-pop .pop-back { margin: 0 0 6px; }
+.gloss-pop .pop-back button {
+  font-size: var(--fs-11);
+  padding: 1px 6px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+/* ペルソナ（語り手）の顔。**行ごとに付ける** —— 同じ表記が複数の辞書にあると
+   吹き出しに並ぶので、1 枚を上に置くとどれの語り手か分からない。
+   `object-fit: cover` で縦横比を保つ（画像は利用者が用意するので寸法は不定） */
+.gloss-pop .pop-head { display: flex; align-items: flex-start; gap: 9px; }
+.gloss-pop .pop-head > div { min-width: 0; }
+.gloss-pop .pop-face {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+}
+/* アコーディオンの行は既に flex（上で定義済み）。ここでは大きさだけ小さくする */
+.gloss-pop .pop-item > summary .pop-face { width: 20px; height: 20px; }
+.gloss-pop .pop-alias { font-size: var(--fs-11); color: var(--fg-faint); }
+.gloss-pop .pop-loading { color: var(--fg-faint); }
+
+/* ------------------------------------------------------- selection button */
+
+.sel-add {
+  position: fixed;
+  z-index: 880;
+  box-shadow: var(--shadow);
+}
+.sel-add[hidden] { display: none; }
+
+/* ---------------------------------------------------------------- dialog */
+
+dialog.sheet {
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--fg);
+  padding: 0;
+  width: min(680px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  box-shadow: var(--shadow);
+}
+dialog.sheet::backdrop { background: rgba(0, 0, 0, .45); }
+dialog.sheet form { display: flex; flex-direction: column; max-height: calc(100vh - 48px); }
+dialog.sheet header {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+dialog.sheet header h2 { margin: 0; font-size: var(--fs-15); }
+dialog.sheet .body { padding: 16px 18px; overflow: auto; }
+dialog.sheet footer {
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  /* 項目が増えると横幅が足りなくなる。詰めずに折り返す
+     (詰めるとボタンの文字が縦に割れて読めなくなる) */
+  flex-wrap: wrap;
+}
+dialog.sheet footer .spacer { flex: 1; }
+
+/* ダイアログのタブ。**選択中がひと目で分かる差を付けること** —— 下線だけだと
+   淡いテーマで見分けが付かず、「いまどれを開いているのか分からない」になる。
+   色は既存の変数だけで作る（新しい色を足すと、ダークの定義が 2 か所あるぶん
+   片方だけ直す事故が起きる）。 */
+.sheet-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 10px 18px 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-2);
+}
+.sheet-tabs button {
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: none;
+  color: var(--fg-dim);
+  font-size: var(--fs-13);
+  padding: 7px 16px;
+  margin-bottom: -1px;
+  cursor: pointer;
+}
+.sheet-tabs button:hover { color: var(--fg); }
+.sheet-tabs button[aria-selected="true"] {
+  background: var(--panel);
+  border-color: var(--border);
+  color: var(--fg);
+  font-weight: 600;
+}
+/* 中身が変わったことを知らせる印（例: AI が使えない）。文字だけだと気付かれない */
+.sheet-tabs button .tab-mark { color: var(--warn); margin-left: 5px; }
+
+.status { font-size: var(--fs-12); color: var(--fg-dim); }
+.status.error { color: var(--danger); }
+.status.busy::after {
+  content: "";
+  display: inline-block;
+  width: 9px; height: 9px;
+  margin-left: 6px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  vertical-align: -1px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .status.busy::after { animation: none; } }
+
+.notice {
+  font-size: var(--fs-12);
+  line-height: 1.6;
+  margin: 0 0 12px;
+  padding: 7px 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--warn);
+  background: var(--panel-2);
+  color: var(--fg-dim);
+}
+.notice[hidden] { display: none; }
+
+/* 「初出へ」で飛んできたときに、どれを見ればいいか分かるようにする */
+.gloss-flash {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+  animation: gloss-flash 2.4s ease-out 1 forwards;
+}
+@keyframes gloss-flash { to { outline-color: transparent; } }
+@media (prefers-reduced-motion: reduce) { .gloss-flash { animation: none; } }
+
+/* 読み上げ。いま読んでいるブロックを地色で示す。
+   自動リンクの下線と喧嘩しないよう、outline ではなく背景で出す */
+.speech-bar { margin-top: 6px; }
+.speech-bar button { padding: 2px 8px; }
+.doc .speaking {
+  background: var(--accent-soft);
+  border-radius: 3px;
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+/* まとめて登録ダイアログの候補一覧 */
+.cand-list { list-style: none; margin: 0 0 12px; padding: 0; }
+.cand-list li {
+  padding: 7px 2px;
+  border-bottom: 1px solid var(--border);
+}
+.cand-list li:last-child { border-bottom: 0; }
+.cand-list .term { font-weight: 600; }
+.cand-list .hint { margin: 2px 0 0 22px; }
+.cand-list .status { flex: 0 1 auto; text-align: right; }
+
+.ctx-quote {
+  font-size: var(--fs-12);
+  color: var(--fg-dim);
+  background: var(--panel-2);
+  border-left: 3px solid var(--border-strong);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 6px 10px;
+  margin: 0 0 12px;
+  max-height: 6.5em;
+  overflow: auto;
+}
+
+/* ------------------------------------------------------------- glossary */
+
+.page {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 28px 24px 80px;
+}
+
+/* ビューアの上に重ねる覆い。**ビューアを隠さずに上に乗せる** —— `display: none`
+   で下を消すと、戻したときにスクロール位置が失われる（重ねる目的が「本文を
+   そのまま残す」ことなので、そこが崩れると意味が無い）。
+   `top` は topbar の高さを JS が入れる（topbar は覆いの外に残して使えるまま
+   にしてあり、高さは文字サイズで変わるので決め打ちにしない） */
+.overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 52px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow: auto;
+}
+.overlay > .page { padding-top: 8px; }
+.overlay-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 24px 0;
+}
+/* 覆いが出ている間、下のビューアは触らせない（読み上げなどは動いたまま）。
+   **「読むもの」のバーもここに入れる** —— 覆いは topbar の下を全部覆うので
+   見えてはいないが、`.layout` の外に出した以上ここに書かないと触れてしまう */
+body.overlaid .layout, body.overlaid .sourcebar { pointer-events: none; }
+.page-inner { max-width: 900px; margin: 0 auto; }
+.page h1 { font-size: 1.5em; margin: 0 0 4px; }
+.page .lede { color: var(--fg-dim); font-size: var(--fs-13); margin: 0 0 20px; }
+
+.toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+.toolbar input[type="search"] { max-width: 320px; }
+/* タグの絞り込み。**select ではなく入力欄**（候補は datalist）。placeholder が
+   収まるだけの幅を与える —— 縮むと「#タ…」になって何の欄か読めない */
+.toolbar input.tag-filter { width: 12em; min-width: 9em; }
+
+.cat-group { margin-bottom: 26px; }
+.cat-group > h2 {
+  font-size: var(--fs-14);
+  margin: 0 0 2px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.cat-group > h2 .count { font-size: var(--fs-11); color: var(--fg-faint); font-weight: 400; }
+.sub-group { margin: 12px 0 0 0; }
+.sub-group > h3 {
+  font-size: var(--fs-11);
+  letter-spacing: .05em;
+  color: var(--fg-faint);
+  margin: 0 0 6px;
+  text-transform: none;
+}
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+/* **カード全体は `<a>` ではない。** リンクの中ではドラッグが「リンクを掴む」に
+   なって要約の語を選べないので、見出しだけをリンクにしてカードはクリックで飛ばす
+   （`glossary.js` の `card()`）。そのぶん cursor は自分で出す */
+.card {
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  text-decoration: none;
+  color: var(--fg);
+  cursor: pointer;
+}
+.card:hover { border-color: var(--accent); }
+.card .t { font-weight: 600; font-size: var(--fs-14); display: block; color: inherit; text-decoration: none; }
+.card .t:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.card .r { font-size: var(--fs-10); color: var(--fg-faint); margin-left: 5px; font-weight: 400; }
+.card .s {
+  font-size: var(--fs-12);
+  color: var(--fg-dim);
+  margin-top: 3px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* 用語ごとの画像のサムネイル。**顔と違って語ごとに違う**ので一覧に出す。
+   カードの高さを揃えるため、左に小さく置いて本文を回り込ませる。 */
+.card.has-thumb { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 10px; }
+.card-thumb {
+  grid-row: 1 / span 2;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+}
+
+/* --------------------------------------------------------- entry detail */
+
+/* 辞書ページでは .doc の中央寄せを打ち消して見出しと左端を揃える */
+.page-inner .doc { max-width: none; margin: 0; }
+
+.entry-head { border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 18px; }
+.entry-head .crumb { font-size: var(--fs-12); color: var(--fg-dim); margin-bottom: 6px; }
+.entry-head .crumb a { text-decoration: none; }
+.entry-head h1 { font-size: 1.8em; margin: 0; }
+.entry-head .reading { font-size: var(--fs-13); color: var(--fg-faint); font-weight: 400; margin-left: 8px; }
+/* ペルソナ（語り手）の顔。**float を含めるために flow-root にする** ——
+   しないと親が高さを持たず、下の罫線を顔がはみ出す */
+.entry-head.has-face { display: flow-root; }
+.entry-head .entry-face {
+  float: right;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 0 8px 14px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+}
+.entry-head .aliases { font-size: var(--fs-12); color: var(--fg-dim); margin: 6px 0 0; }
+.entry-head .summary { margin: 10px 0 0; font-size: var(--fs-15); }
+
+/* 用語ごとの画像。**顔（右上の丸）とは別物**なので、丸くも小さくもしない ——
+   その語そのものの絵なので、読める大きさで出す。**高さは頭打ちにする**
+   （縦長の画像で本文が画面の外へ押し出されないように）。 */
+.entry-image { margin: 12px 0 0; clear: both; }
+.entry-image .entry-photo {
+  display: block;
+  max-width: min(100%, 420px);
+  max-height: 320px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  object-fit: contain;
+}
+/* 入れる前は押す口だけ。**画像が無くてもボタンは出す** —— 隠すと入れる道が消える */
+.entry-image .toolbar { margin-top: 8px; }
+
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+/* 丸い粒が割れると印に見えなくなるので、こちらも折り返さない
+   (`.chips` 側が `flex-wrap: wrap` なので、粒ごと次の行へ落ちる) */
+.chip {
+  font-size: var(--fs-11);
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--fg-dim);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+
+.cat-group.empty-cat > h2 { color: var(--fg-faint); font-weight: 500; }
+
+/* カテゴリ管理ダイアログ */
+dialog.sheet .cat-manager { display: flex; flex-direction: column; max-height: calc(100vh - 48px); }
+dialog.sheet .cat-manager .body { padding: 8px 18px; overflow: auto; }
+dialog.sheet .cat-manager footer { flex-wrap: wrap; }
+/* ボタンは縮まないので、幅が足りないときは行のほうを折り返す。詰めると
+   カテゴリ名の側が 1 文字ずつ縦に割れる（ダイアログの footer と同じ考え方） */
+.cat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+/* 目次。章が多い本でも脇のパネルを占領しないよう、高さで区切ってスクロールさせる */
+.toc { max-height: 40vh; overflow: auto; margin-bottom: 6px; }
+
+/* 「この語が出てくる文書」。押したときに読むので details で畳んでおく */
+.appearances-box > summary { cursor: pointer; font-size: var(--fs-13); color: var(--fg-dim); }
+.appearances { margin-top: 10px; }
+.appearance-file + .appearance-file { margin-top: 12px; }
+.appearance-name {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  margin: 0 0 4px;
+  font-size: var(--fs-13);
+  font-weight: 600;
+  /* ファイル名なので変形しない（`.rel-sub` は uppercase の小見出し用） */
+  text-transform: none;
+}
+.appearance-name .count { font-size: var(--fs-11); color: var(--fg-faint); font-weight: 400; }
+/* 例文は折り返して読ませる（関係の 1 行とは別物） */
+.appearances .rel-row .rel-label { white-space: normal; }
+
+/* 相関図から関係 1 本を直すダイアログ。カテゴリ管理と同じ骨格に揃える */
+dialog.sheet .edge-editor { display: flex; flex-direction: column; max-height: calc(100vh - 48px); }
+dialog.sheet .edge-editor .body { padding: 8px 18px; overflow: auto; }
+dialog.sheet .edge-editor .body label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: var(--fs-12);
+  color: var(--fg-faint);
+}
+dialog.sheet .edge-editor .body label input,
+dialog.sheet .edge-editor .body label select { display: block; width: 100%; margin-top: 3px; }
+dialog.sheet .edge-editor .rel-who {
+  margin: 0;
+  padding: 0 18px;
+  font-size: var(--fs-14);
+  font-weight: 600;
+}
+dialog.sheet .edge-editor > .hint { padding: 0 18px 12px; margin: 0; }
+
+.cat-row:last-child { border-bottom: 0; }
+/* 基準幅を持たせる。`flex: 1`（基準 0）だと、ボタンが縮まないぶん名前の側が
+   0 まで潰れて 1 文字ずつ縦に割れる。基準を割ったら行ごと折り返す */
+.cat-row-main { flex: 1 1 140px; min-width: 0; }
+.cat-row-name { font-size: var(--fs-14); font-weight: 600; }
+.cat-row-meta { font-size: var(--fs-11); color: var(--fg-faint); overflow-wrap: anywhere; }
+
+/* 「編集」と ⋯ だけの行。**消える操作は ⋯ の中**（→ CLAUDE.md）。
+   `spacer` で「一覧へ戻る」を右へ寄せ、操作と移動を見分けられるようにしている */
+.entry-actions { margin: 28px 0 0; }
+.entry-actions .spacer { flex: 1; }
+.move-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.move-panel[hidden] { display: none; }
+.move-panel input { width: auto; }
+/* 統合ダイアログ。**既存の変数だけで作る** —— 新しい色を足すと、ダークの定義が
+   2 か所にあるぶん片方だけ直す事故が起きる */
+/* 列に `minmax(0, 1fr)` を使う。既定 (`auto` = min-content 以上) だと、折り返さない
+   候補の説明のぶんだけ列が伸びて**横スクロールが出る**（`…` で切られない） */
+.merge-results {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+  max-height: 40vh;
+  overflow: auto;
+}
+.merge-cand {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  cursor: pointer;
+}
+.merge-cand:hover { border-color: var(--border-strong); background: var(--panel-2); }
+/* 用語名も説明も長くなりうる。ボタンなので折り返さず `…` で切る */
+.merge-cand .t, .merge-cand .s { display: block; overflow: hidden; text-overflow: ellipsis; }
+.merge-cand .t { font-weight: 600; font-size: var(--fs-14); }
+.merge-cand .s { font-size: var(--fs-11); color: var(--fg-faint); }
+.merge-section { margin-top: 18px; }
+.merge-section > h3 {
+  font-size: var(--fs-11);
+  letter-spacing: .08em;
+  color: var(--fg-faint);
+  margin: 0 0 6px;
+}
+.merge-union { margin: 0; padding-left: 18px; font-size: var(--fs-12); color: var(--fg-dim); }
+.merge-conflict { margin-bottom: 12px; }
+.merge-conflict > h4 { font-size: var(--fs-12); margin: 0 0 4px; }
+.merge-choice {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 4px;
+  cursor: pointer;
+  font-size: var(--fs-13);
+  white-space: pre-wrap;
+}
+.merge-choice:hover { background: var(--panel-2); }
+.merge-choice input { width: auto; margin-top: 3px; flex: none; }
+.merge-relation {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--fs-13);
+}
+.merge-relation:last-child { border-bottom: 0; }
+.merge-relation .t { font-weight: 600; display: block; }
+.merge-relation .s { font-size: var(--fs-12); color: var(--fg-dim); }
+
+.entry-section { margin-top: 26px; }
+.entry-section > h2 {
+  font-size: var(--fs-11);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  margin: 0 0 8px;
+}
+.entry-meta { font-size: var(--fs-11); color: var(--fg-faint); margin-top: 30px; overflow-wrap: anywhere; }
+.entry-meta .sep { margin: 0 8px; opacity: .6; }
+
+/* 別タブで開く外部リンク */
+.ext-link { text-decoration: none; border-bottom: 1px solid currentColor; }
+.ext-link::after {
+  content: "↗";
+  font-size: .85em;
+  margin-left: 3px;
+  vertical-align: 1px;
+  border-bottom: 0;
+}
+.ext-link[hidden] { display: none; }
+
+/* ---------------------------------------------------------------- 抽出の種別 */
+/* 「何を抜き出すか」を先に決めさせる段。ここを飛ばすと AI は語義説明のできる
+   語ばかり挙げ、登場人物がまるごと落ちる */
+.kind-picker {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px 12px;
+  margin: 0 0 14px;
+  background: var(--panel-2);
+}
+.kind-picker legend {
+  font-size: var(--fs-11);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  padding: 0 4px;
+}
+.kind-picker:disabled { opacity: .55; }
+.kind-list { display: flex; flex-direction: column; gap: 6px; }
+label.check.kind { align-items: baseline; flex-wrap: wrap; }
+.kind-label { font-weight: 600; }
+label.check.kind .hint { flex: 1 1 100%; margin: 0 0 0 22px; }
+.cand-list .cand-group {
+  border-bottom: 0;
+  padding: 12px 0 2px;
+  font-size: var(--fs-11);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+/* ---------------------------------------------------------------- 関係 */
+/* 関係は片側にしか書かない。逆向きは「指している側」として出す */
+.rel-list { list-style: none; margin: 0 0 10px; padding: 0; }
+.rel-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.rel-row:last-child { border-bottom: 0; }
+.rel-arrow { color: var(--fg-faint); font-size: var(--fs-15); width: 1.2em; text-align: center; }
+.rel-label { font-weight: 600; }
+.rel-rank, .rel-reveal, .rel-when {
+  font-size: var(--fs-11);
+  color: var(--fg-dim);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+/* **判明位置は注意の色**（書くと図では既定で伏せる ＝ 図の出方が変わる）。
+   **作中の時刻は素のまま** —— 並べ替えに使うだけで、何も伏せない。
+   同じ色にすると「時刻を書くと伏せられる」と読まれる。 */
+.rel-reveal { color: var(--warn); border-color: var(--warn); }
+/* **語から継いだ時刻は枠を破線に。** 書かれた時刻と同じ見た目で並べると、
+   その関係に時刻を書いたように見えて、消そうとして関係のほうを探し回ることになる
+   （実際の値は語の側にある）。**色は変えない** —— 別の軸ではなく同じ軸の値 */
+.rel-when.inherited { border-style: dashed; color: var(--fg-faint); }
+.rel-sub {
+  font-size: var(--fs-11);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  margin: 18px 0 4px;
+  font-weight: 600;
+}
+/* wiki の赤リンク: まだ書いていない相手 */
+.chip.missing {
+  border-style: dashed;
+  color: var(--danger);
+  border-color: var(--danger);
+}
+/* 「＋ 関係を足す」。**入力 7 個を常時開いておかない**（→ CLAUDE.md の置き場所の表）。
+   summary はボタンに見せる —— 畳んである入口だと分からないと、関係を書く道が
+   消えたように見える。開閉は `entry.js` が覚える */
+.rel-form-fold { margin-top: 12px; }
+.rel-form-fold > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-13);
+  padding: 6px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+  color: var(--fg);
+  cursor: pointer;
+  white-space: nowrap;
+  list-style: none;
+}
+.rel-form-fold > summary::-webkit-details-marker { display: none; }
+.rel-form-fold > summary:hover { border-color: var(--accent); color: var(--accent); }
+.rel-form-fold[open] > summary { border-color: var(--accent); color: var(--accent); }
+
+.rel-form {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+}
+/* ボタンは折り返さないので、狭いときは行のほうを折り返す */
+.rel-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.rel-form-line { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+.rel-form-line input { flex: 1 1 180px; width: auto; }
+.rel-form-line input.narrow { flex: 0 1 160px; }
+.rel-form .hint { margin: 0; }
+
+/* ---------------------------------------------------------------- 相関図 */
+/* タブの上の行。**何を出している図なのかと、語数・本数だけ**を置く場所。
+   ここに操作を足さないこと —— タブより上にあるものは「どの見せ方でも同じ」に
+   見えるので、実際にはタブ専用のものを置くと嘘になる */
+.graph-head { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.graph-head .spacer { flex: 1; }
+.graph-toolbar { margin-bottom: 10px; }
+/* 「どのタブでも効くもの」と「そのタブ専用」の仕切り。**専用のものがあるときだけ
+   出す**（`graph.js` の `syncTabTools`）—— 出しっぱなしだと、段の図のように専用の
+   操作が無いタブで意味のない線が残る */
+.bar-sep { width: 1px; align-self: stretch; margin: 2px 2px; background: var(--border); }
+.graph-stage { position: relative; }
+.graph-canvas {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  /* **入れ物の大きさは固定。** はみ出したぶんはスクロールではなく動かして見る
+     （どこを見ているのか分からなくなるのを避ける。→ graph.js の viewBox） */
+  height: clamp(320px, 64vh, 860px);
+  overflow: hidden;
+  /* 指で動かせるように、既定のスクロール操作を止める */
+  touch-action: none;
+  cursor: grab;
+}
+.graph-canvas.grabbing { cursor: grabbing; }
+/* 図が無いときは高さを取らない（案内文だけの箱を画面いっぱいにしない） */
+.graph-canvas.is-empty { height: auto; padding: 4px; cursor: default; }
+.graph-canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rel-graph {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* 掴んで動かすので、なぞった先の文字が選ばれないようにする */
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* 図の下の枠。**高さは常に同じ**（出たり消えたりで下の凡例まで動くと読みにくい）。
+   2 行に収め、溢れたら切る —— 全文はブラウザの吹き出しにもある */
+.graph-detail {
+  margin: 8px 0 0;
+  min-height: 3em;
+  font-size: var(--fs-13);
+  line-height: 1.5;
+  color: var(--fg);
+  border-left: 3px solid var(--accent);
+  padding: 2px 0 2px 10px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+/* 何にも乗せていないときは案内文。枠だけが残るより分かる */
+.graph-detail.is-hint { color: var(--fg-faint); border-left-color: var(--border); }
+
+/* 拡大縮小のボタンは図の上に重ねる（ツールバーの行を増やさない） */
+.graph-zoom {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  gap: 4px;
+}
+.graph-zoom button {
+  padding: 4px 10px;
+  background: var(--panel);
+  opacity: 0.9;
+}
+.graph-zoom button:hover { opacity: 1; }
+
+/* **ここから下の SVG の文字だけは `--fs-base` に付いてこない。生の px のまま。**
+   相関図は箱もラベルの置き場所も JS が計算していて、その見積もりが**この数字を
+   知らない**（`base.js` の `estTextWidth` の既定 11、`svgVerticalText` の
+   `lineHeight`、`graph.js` の `labelBox`）。片方だけ大きくすると、避けたはずの
+   ラベルが重なり、縦書きの列からも文字がはみ出す —— しかも**図は描けてしまう**
+   ので画面を見るまで分からない。
+   大きく見たいときは図の拡大縮小（`viewBox` を動かす）で、こちらは線もラベルも
+   一緒に大きくなる。ここを var に変えるなら、**先に JS 側の見積もりへ同じ値を
+   渡すこと**（→ CLAUDE.md「文字の大きさ」）。 */
+.rel-node rect {
+  fill: var(--panel-2);
+  stroke: var(--border-strong);
+  stroke-width: 1.5;
+}
+.rel-node text { fill: var(--fg); font: 600 13px var(--sans); }
+.rel-node a { cursor: pointer; }
+.rel-node a:hover rect { stroke: var(--accent); fill: var(--accent-soft); }
+.rel-node.outside rect { fill: transparent; stroke-dasharray: 2 3; }
+.rel-node.missing rect { stroke: var(--danger); stroke-dasharray: 4 3; fill: transparent; }
+.rel-node.missing text { fill: var(--danger); }
+/* 地図（`map.js`）。**絵は `<image>` の中**に置いてあるので、`viewBox` を動かせば
+   画像も線も語も一緒に動く（CSS の背景にすると 2 つを別々に動かすことになる）。
+   点は丸と名前で、**箱にしない** —— 箱で地形を覆うと位置で置いた意味が減る。
+   名前の板は `.rel-node rect` の見た目をそのまま借りる（**写しを作らない**）。 */
+/* 地図に出すものの一覧。**行のほうを折り返す**（ボタンとラベルは折り返さない、
+   という約束はここでも同じ）。狭い画面では 1 語ずつ縦に積まれるだけで済む。 */
+.map-layers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin: 0 0 8px;
+}
+/* 五十音の飛び先の帯（`glossary.js` の `jumpBar`）。**中身のある行だけ**が並ぶ。
+   一覧の上に貼り付けておくと、長い辞書でも行を見失わない。 */
+.kana-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 0;
+  margin-bottom: 8px;
+  background: var(--bg);
+}
+/* 五十音で束ねたときだけ出る、そのカードのカテゴリ。**見出しがカテゴリで
+   なくなるぶんの埋め合わせ**なので、要約より弱く出す */
+.card-path { font-size: var(--fs-11); color: var(--fg-faint); margin-top: 4px; }
+
+.map-layers .check { width: auto; }
+/* 時点のスライダ（`timeSlider`）。**幅は決め打ちにしない** —— 狭い画面では
+   行のほうが折り返す（ボタンの文字は折り返さない、という約束はここでも同じ）。 */
+.map-time { flex: 1 1 160px; max-width: 320px; min-width: 120px; }
+/* 図の中の線・領域に振った色の札。**色は図が決めて `items` で渡ってくる**ので、
+   ここでは大きさだけ決める（同じ色を 2 か所で作らない）。点には色が無い ——
+   重なるのは線と領域だけなので、そこだけ分けている（→ map.js の `shapeColors`）。 */
+.map-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.rel-map-bg { pointer-events: none; }
+.rel-map-pin circle { fill: var(--accent); stroke: var(--panel); stroke-width: 2; }
+.rel-map-pin a:hover circle { fill: var(--fg); }
+.rel-map-pin text { font: 600 12px var(--sans); }
+/* 形は 3 つ。**領域は必ず半透明**にする —— 塗りつぶすと、重なった側とその下の
+   地形が両方読めなくなる（重ねる順は 領域 → 線 → 点。JS 側で層を分けてある）。
+   線は細くて押せないので、透明な太い線を下に重ねて当たり判定にする（辺と同じ作法）。 */
+/* **描く要素のクラスは種別のクラスと分ける。** 同じ名前にすると `<g>` にも
+   付いて、`fill` が継承で効いてしまう（気付きにくい効き方をする）。 */
+/* **線と領域だけは 1 つずつ色が違う**（`--shape-color`。同じ絵の上で重なるので、
+   同色だとどれがどの説なのか一言のラベルでしか分からない —— その一言は重なれば
+   畳まれる）。色を決めるのは `map.js` の `shapeColors` **1 か所**で、ここは
+   受け取るだけ。**変数が無ければ今までどおり `--accent`**（点がそれ）。
+   乗せたときの色（`var(--fg)`）はこの下の規則が勝つので、色を振っても
+   「乗せると変わる」は残る —— インラインで `stroke` を直に書くと、そこが死ぬ。 */
+.rel-map-fill {
+  fill: var(--shape-color, var(--accent));
+  fill-opacity: 0.18;
+  stroke: var(--shape-color, var(--accent));
+  stroke-width: 2;
+}
+.rel-map-pin a:hover .rel-map-fill { fill-opacity: 0.32; }
+.rel-map-route {
+  fill: none;
+  stroke: var(--shape-color, var(--accent));
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.rel-map-pin a:hover .rel-map-route { stroke: var(--fg); }
+.rel-map-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 16;
+  vector-effect: non-scaling-stroke;
+}
+/* 用語の画像を点の代わりに出したとき（`map.js` の `FACE_R`）。丸く抜くのは
+   `<clipPath>`。**縁を付ける** —— 絵が地図に溶けると、どこまでがその語なのか
+   分からなくなる。乗せたときに縁が変わるのは、丸のときと同じ合図。 */
+.rel-map-face-ring { fill: none; stroke: var(--panel); stroke-width: 3; }
+.rel-map-pin a:hover .rel-map-face-ring { stroke: var(--accent); }
+/* **重なった名前は畳む**（一言の `.rel-edge-label.tucked` と同じ約束）。
+   地図は座標が与えられている図なので**逃がす場所が無い** —— 重ねると重なった
+   2 つとも読めず、下の絵まで隠す。消してはいないので、乗せる・焦点が当たる・
+   その語の関係を辿ると出る（畳んだ数は注意書きに出す）。 */
+.rel-map-name.tucked { display: none; }
+.rel-node:hover .rel-map-name.tucked,
+.rel-node:focus-within .rel-map-name.tucked,
+.rel-node.lit .rel-map-name.tucked,
+.rel-node.hot .rel-map-name.tucked { display: block; }
+.rel-edge { fill: none; stroke: var(--border-strong); stroke-width: 1.5; }
+.rel-edge.missing { stroke: var(--danger); stroke-dasharray: 4 3; }
+.rel-edge.reveal { stroke: var(--warn); stroke-dasharray: 6 3; }
+.rel-arrowhead { fill: var(--border-strong); }
+/* 線そのものは細すぎて押せない。透明な太い線を下に重ねて当たり判定にする。
+   **当たり判定だけは縮めない**（non-scaling-stroke）—— 縮小すると 14px が
+   数 px になり、見えている線が押せなくなる */
+.rel-edge-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14;
+  vector-effect: non-scaling-stroke;
+}
+/* 押せる帯の大きさを外形として持たせるためだけの四角。描かないし、押しても
+   拾わない（拾うと辺の外接矩形が丸ごと当たり判定になり、隣の辺を覆う） */
+.rel-edge-band { fill: none; stroke: none; pointer-events: none; }
+.rel-edge-group { cursor: pointer; }
+/* 線と一言は別の層に居る（線が文字を横切らないため）ので、両方に付ける印は
+   JS が回す。**片方だけ光らせないこと** —— 一言は空いているところへ逃がすので
+   線の真上とは限らず、線だけ色が変わってもどの関係なのか分からない */
+.rel-edge-group:hover .rel-edge,
+.rel-edge-group:focus-visible .rel-edge,
+.rel-edge-group.hot .rel-edge { stroke: var(--accent); stroke-width: 2.5; }
+.rel-edge-group:focus-visible { outline: none; }
+/* 交差しない見せ方（用語が横線、関係が縦線）。線の色・太さ・当たり判定・
+   強調はすべて段の図と同じクラスを使い回す。ここに足すのは形だけ */
+.rel-fabric .fab-line { stroke: var(--border-strong); stroke-width: 1; }
+.rel-fabric .rel-node text { font: 600 12px var(--sans); }
+.rel-fabric .rel-node.lit .fab-line { stroke: var(--accent); }
+.rel-fabric .fab-end { fill: var(--border-strong); }
+.rel-fabric .rel-edge-group.hot .fab-end,
+.rel-fabric .rel-edge-group.lit .fab-end { fill: var(--accent); }
+/* 一言は列の上に縦書き。22px の列幅に横書きは入らない */
+.rel-fabric .rel-edge-label { stroke-width: 2px; }
+
+/* 行列の見せ方（行が「から」、列が「へ」）。**空きマスも描く** —— 「まだ関係を
+   書いていない組」を読ませるのがこの見せ方の役目なので、格子を消さないこと */
+/* 飾りは当たり判定を持たない。持つとマスと帯を覆って押せなくなる */
+.rel-matrix .mx-grid, .rel-matrix .mx-split, .rel-matrix .mx-diagonal { pointer-events: none; }
+.rel-matrix .mx-grid line { stroke: var(--border); stroke-width: 0.5; }
+.rel-matrix .mx-split line { stroke: var(--border-strong); stroke-width: 1.5; }
+.rel-matrix .mx-diagonal rect { fill: var(--panel-2); }
+/* 行と列そのものを掴むための透明な帯（見出しの上だけでは狭すぎる） */
+.rel-matrix .mx-band { fill: transparent; }
+.rel-matrix .mx-cell rect { fill: var(--fg-dim); }
+.rel-matrix .mx-cell.missing rect { fill: var(--danger); }
+.rel-matrix .mx-cell.reveal rect { fill: var(--warn); }
+.rel-matrix .rel-edge-group:hover rect,
+.rel-matrix .rel-edge-group:focus-visible rect,
+.rel-matrix .rel-edge-group.lit rect { fill: var(--accent); }
+.rel-matrix .rel-node text { font: 600 12px var(--sans); }
+.rel-matrix .rel-node.lit text { fill: var(--accent); }
+/* 乗せた語の行と列を十字に残す。行列は目で横へたどるのが難しい。
+   **塗るのは乗せた語だけ**（相手まで塗ると盤面の半分が色で埋まる） */
+.rel-matrix .rel-node.here .mx-band { fill: var(--accent-soft); }
+
+/* 1 語を中心にした見せ方。線の色・太さ・当たり判定・強調は段の図と同じクラスを
+   使い回す。ここに足すのは形だけ */
+/* 環の目印は飾り。**当たり判定を持たせない**（線とノードの上に乗ると押せなくなる） */
+.rel-ego .ego-guides { pointer-events: none; }
+.rel-ego .ego-guides circle {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+}
+/* 中心の語は一回り大きく、色でも示す（どれが中心かを形で分かるように） */
+.rel-ego .ego-center rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.rel-ego .ego-center text { font: 700 14px var(--sans); }
+/* まわりの語は押すと中心が移る（link ではなくボタン） */
+.rel-ego .ego-ring1, .rel-ego .ego-far { cursor: pointer; }
+.rel-ego .ego-ring1:hover rect,
+.rel-ego .ego-ring1:focus-visible rect,
+.rel-ego .ego-far:hover rect,
+.rel-ego .ego-far:focus-visible rect { stroke: var(--accent); fill: var(--accent-soft); }
+.rel-ego .ego-ring1:focus-visible, .rel-ego .ego-far:focus-visible { outline: none; }
+/* 2 つ先から先は薄く。**中心からの遠さ**を色でも出す（環の目印だけだと読み落とす）。
+   深さは選べるので、**環ごとにさらに薄くする** —— 同じ薄さで 3 段 4 段と並べると、
+   どれが近所でどれが遠いのか色では読めなくなる。**乗せた / 焦点が当たったものは
+   薄くしない**（読ませたいのはそちら） */
+.rel-ego .ego-far rect { fill: var(--panel); }
+.rel-ego .ego-far text { fill: var(--fg-dim); }
+.rel-ego .ego-ring3 { opacity: 0.88; }
+.rel-ego .ego-ring4 { opacity: 0.76; }
+.rel-ego .ego-far.lit, .rel-ego .ego-far:hover, .rel-ego .ego-far:focus-visible { opacity: 1; }
+
+/* 時系列の見せ方（上から順に、関係が読めるようになる順）。線の色・太さ・
+   当たり判定・強調はすべて段の図と同じクラスを使い回す。ここに足すのは形だけ */
+/* 軸と見出しは飾り。**当たり判定を持たせない**（行の上に乗ると押せなくなる） */
+.rel-timeline .tl-axis { pointer-events: none; }
+.rel-timeline .tl-axis line { stroke: var(--border-strong); stroke-width: 1; }
+.rel-timeline .tl-split { stroke: var(--border); stroke-dasharray: 3 4; }
+.rel-timeline .tl-tick { fill: var(--border-strong); }
+/* **だいたいの時刻は白抜き**（`16世紀` `約1560`）。位置は範囲の頭に置いてあるので、
+   実線の点にすると 1501 年ちょうどに見える —— 精度まで置き換えないための印 */
+.rel-timeline .tl-tick.about { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1; }
+.rel-timeline .tl-head text { fill: var(--fg-dim); font: 600 11px var(--sans); }
+/* 位置の出せなかった関係の帯。落としてはいないが、読み進む順ではないと分かるように */
+.rel-timeline .tl-head.undated text { fill: var(--fg-faint); font-weight: 400; }
+.rel-timeline .tl-empty { fill: var(--fg-dim); font: 12px var(--sans); }
+.rel-timeline .rel-node text { font: 600 12px var(--sans); }
+/* 人が書いた判明位置。並べ替えには使っていない（計算値と混ぜて読ませない） */
+.rel-timeline .tl-reveal { fill: var(--warn); font: 11px var(--sans); }
+
+/* 年表（1 行 1 語）。**軸に載らない相手は「従」**として行のうしろに小さく出す。
+   語の箱と同じ見た目にしないこと —— 同じ大きさで並べると、どれが行なのか
+   （＝どれが時刻を持つ語なのか）が絵から読めなくなる。 */
+.rel-chronicle .tl-chip rect {
+  fill: var(--panel-2);
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.rel-chronicle .tl-chip text { fill: var(--fg-dim); font: 11px var(--sans); }
+.rel-chronicle .tl-chip a:hover rect { stroke: var(--accent); }
+.rel-chronicle .tl-chip a:hover text { fill: var(--fg); }
+/* 未登録の相手（wiki の赤リンク）。段の図の `.missing` と同じ扱い */
+.rel-chronicle .tl-chip.missing rect { stroke-dasharray: 3 3; }
+/* 「ほか N」は行き先が 1 つに決まらないのでリンクにしない（押せると見せない） */
+.rel-chronicle .tl-chip.more rect { fill: none; stroke: none; }
+.rel-chronicle .tl-chip.more text { fill: var(--fg-faint); }
+/* 弧の一言は縦書き。列が細いので、字は本文より小さくする */
+.rel-chronicle .rel-edge-label { font-size: 10px; }
+
+/* 関係の無い語をまとめた帯。**段ではない**と見て分かるように区切る */
+.rel-lonely-rule line { stroke: var(--border); stroke-width: 1; stroke-dasharray: 3 4; }
+.rel-lonely-caption { fill: var(--fg-dim); font: 11px var(--sans); }
+/* 線の上に載るので、背景色で縁取りして読めるようにする */
+.rel-edge-label {
+  fill: var(--fg-dim);
+  font: 11px var(--sans);
+  paint-order: stroke;
+  stroke: var(--panel);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  cursor: pointer;
+}
+.rel-edge-label.hot {
+  fill: var(--accent);
+  font-weight: 700;
+  /* 光った文字が線に埋もれないよう、縁取りも強くする */
+  stroke-width: 4px;
+}
+/* 置き場所が無かった一言は畳む。重ねて出すと、重なった 2 つとも読めなくなる
+   うえ下の線まで隠す。**消してはいない** —— 本数は凡例に出るし、線かその語に
+   乗せれば出る */
+.rel-edge-label.tucked { display: none; }
+.rel-edge-label.tucked.hot,
+.rel-edge-label.tucked.lit { display: block; }
+
+/* 1 つの語に乗せている間は、その語の関係だけを濃く出す。交差はどう並べても
+   消せないので、密なところは「一度に全部を読ませない」のが唯一きく手
+   （→ docs/design-notes.md） */
+.rel-graph.focusing .rel-node,
+.rel-graph.focusing .rel-edge-group,
+.rel-graph.focusing .rel-edge-label { opacity: 0.12; }
+.rel-graph.focusing .rel-node.lit,
+.rel-graph.focusing .rel-edge-group.lit,
+.rel-graph.focusing .rel-edge-label.lit { opacity: 1; }
+/* 判明位置も線・一言と一緒に濃くする（1 本の関係のものが揃って出ないと読めない） */
+.rel-timeline.focusing .tl-reveal { opacity: 0.12; }
+.rel-timeline.focusing .tl-reveal.lit { opacity: 1; }
+.rel-timeline .tl-reveal.hot { font-weight: 700; }
+/* 年表の従も同じ扱い。**ここを落とすと、従に乗せたときだけ「全体が褪せて
+   何も濃くならない」** —— 従はその関係の唯一の見た目なので、光る先が他に無い */
+.rel-chronicle.focusing .tl-chip { opacity: 0.12; }
+.rel-chronicle.focusing .tl-chip.lit { opacity: 1; }
+.rel-node, .rel-edge-group, .rel-edge-label, .tl-reveal, .tl-chip {
+  transition: opacity 0.12s ease-out;
+}
+
+/* ---------------------------------------------------------------- 点検 */
+.issue-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: var(--fs-11);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--accent-fg);
+  background: var(--fg-faint);
+}
+.issue-badge.error { background: var(--danger); color: #fff; }
+.issue-badge.warn { background: var(--warn); color: #fff; }
+.issue-detail { color: var(--fg-dim); font-size: var(--fs-13); }
+
+/* ---------------------------------------------------------------- 設定 */
+.setting-choice { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+.setting-choice label.check { align-items: flex-start; }
+.setting-choice label.check > span { display: flex; flex-direction: column; gap: 2px; }
+.setting-choice .hint { margin: 0; }
+/* 横のボタンが縮まないので、幅が足りないときは行を折り返す。詰めると
+   見出し（「モデル」）が 1 文字ずつ縦に割れる */
+.setting-row { display: flex; gap: 8px; align-items: center; margin: 0 0 10px 22px; flex-wrap: wrap; }
+.setting-row[hidden] { display: none; }
+.setting-row > label { white-space: nowrap; }
+.setting-row input { flex: 1 1 120px; width: auto; min-width: 0; }
+.path-details { margin-top: 12px; }
+.path-details summary {
+  cursor: pointer;
+  font-size: var(--fs-12);
+  color: var(--fg-dim);
+  padding: 4px 0;
+}
+/* ラベルとパスを 2 列に。長いパスで行が伸びて主役を食わないようにする */
+.path-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 2px 12px;
+  margin: 6px 0 8px;
+  font-size: var(--fs-12);
+}
+.path-list dt { color: var(--fg-dim); white-space: nowrap; }
+.path-list dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-11);
+  overflow-wrap: anywhere;
+}
+@media (max-width: 560px) {
+  .path-list { grid-template-columns: 1fr; }
+  .path-list dd { margin-bottom: 6px; }
+}
+.update-notice {
+  font-size: var(--fs-12);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.update-notice:hover { background: var(--accent); color: var(--accent-fg); }
+.setting-row-plain { margin-left: 0; }
+.field-inline { font-size: var(--fs-13); color: var(--fg-dim); }
+
+/* Windows のパスは `\` で折り返せないので、そのままだと入れ物ごと横に伸びる
+   （サイドバーに横スクロールが出た）。**どこでも割ってよい**行に付ける */
+.path-line { overflow-wrap: anywhere; }
+
+/* 語り手の顔。**設定ダイアログとサイドバーで同じものを出す**（`ai-style.js`）ので、
+   狭い側（サイドバー 240px）に収まる形にしてある */
+.persona-list { display: flex; flex-direction: column; gap: 8px; }
+.persona-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;                      /* ボタンは縮まないので行のほうを折り返す */
+}
+.persona-face {
+  width: 36px; height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+}
+.persona-face.empty {
+  display: grid;
+  place-items: center;
+  font-size: var(--fs-18);
+  filter: grayscale(1);
+  opacity: .5;
+}
+/* 隣にボタンが並ぶので、名前とパスの側が縮んで吸収する（基準幅を持たせないと
+   1 文字ずつ縦に割れる） */
+.persona-main { display: flex; flex-direction: column; min-width: 0; flex: 1 1 120px; }
+.persona-label { font-size: var(--fs-13); }
+.persona-main .issue-detail {
+  font-size: var(--fs-11);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* `.rel-sub` は uppercase の小見出し用。日本語しか入らない小見出しはこちら */
+.rel-sub-plain {
+  font-size: var(--fs-12);
+  color: var(--fg-dim);
+  margin: 16px 0 4px;
+  font-weight: 600;
+}
+
+/* 「読むもの」の横一列。topbar の下、本文と左右のパネルの上に敷く。
+   **パスは横に長い**ので、幅を丸ごと使えるここに置く（幅 280px の縦のパネルでは
+   折り返して、いちばん使うファイル一覧を下へ押し下げていた）。
+   行そのものは折り返す（`flex-wrap`）—— ボタンの文字は折り返さない約束なので、
+   狭いときに吸収するのは行のほう */
+/* **1 行に収める。** ここに置くのは毎回使うものだけで、たまに使うもの
+   （＋ その他の開き方）は ⋯ の中、横断検索は結果と同じ左パネルへ移してある。
+   残りをパスの欄が全部取る（横に長いからこのバーを作った）。
+   狭いときは行のほうが折り返す —— ボタンの文字は折り返さない約束なので */
+.sourcebar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 6px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+/* タブの残りを全部使う。**ここを content 幅のままにすると、中の入力欄がいくら
+   伸びようとしても入れ物が伸びない**（パスの欄が 160px のまま残っていた） */
+.sourcebar-panel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* 畳んだ状態。**残すのは「いま読んでいるもの」と戻す道だけ** —— 空の帯にすると、
+   何のための行なのか分からないうえ、出し方も画面から消える */
+.sourcebar.is-folded { padding-top: 2px; padding-bottom: 2px; }
+.sourcebar.is-folded > :not(#foldedLabel):not(#foldSource) { display: none; }
+.sourcebar-folded {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 入力欄 + ボタンの組。**入力欄だけが縮み、組そのものは伸びる。**
+   ボタンは縮まないので、入力欄側の `min-width` を 0 にしておく
+   （そうしないと隣が 1 文字ずつ縦に割れる。→ CLAUDE.md の幅の吸収） */
+.sourcebar-form { display: flex; align-items: center; gap: 6px; }
+.sourcebar-form input { flex: 1 1 auto; min-width: 0; }
+/* **パスと URL はこのバーの主役なので、行の残りを全部取る。** 横に長いからここへ
+   移したのに、ボタンと分け合って 160px になっていては意味が無い（実測でそうなって
+   いた）。1 行に収めるために、隣に並ぶのは毎回使うものだけに絞ってある */
+#rootForm, #urlForm { flex: 1 1 240px; }
+/* 辞書の範囲は「作る」ときだけ出るので、行をまるごと使ってよい */
+#urlDictForm { flex: 1 1 100%; }
+/* 最近開いたフォルダはフルパスなので、広がりすぎないように上限を置く
+   （全文は option の title に入っている） */
+.sourcebar select#recent { max-width: 220px; }
+/* いま開いているフォルダについての断り。**行をまるごと使う**（`flex-basis: 100%`）
+   —— 同じ行に入れると、長い文字列がパスの欄を押し潰す。出ることがあるときだけ */
+.sourcebar > .path-line { flex: 1 1 100%; margin: 2px 0 0; }
+
+/* 左パネルの検索。**1 行**（入口と結果が同じ場所にある）。狭いので押すほうは
+   アイコンだけにする —— ここでラベルを付けると入力欄が「探…」まで潰れる */
+.side-search { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+.side-search input { flex: 1 1 auto; min-width: 0; }
+
+/* 「読むもの」タブ。設定ダイアログの `.sheet-tabs` と同じ考え方 */
+.side-tabs { display: flex; gap: 4px; }
+.side-tabs button {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+  color: var(--fg-dim);
+  font-size: var(--fs-12);
+  padding: 6px 4px;
+  cursor: pointer;
+}
+.side-tabs button:hover { color: var(--fg); }
+.side-tabs button[aria-selected="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ファイル一覧の見出し行（見出し＋再読み込み）。`.side h2` ほど目立たせない */
+.side-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-11);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--fg-faint);
+  margin: 14px 0 6px;
+}
+.side-head > span:first-child { flex: 1; min-width: 0; }
+.side-head:first-child { margin-top: 0; }
+/* 「← 一覧」。見出し行の中の小さなボタンなので、`text-transform` を継がせない
+   （`.side-head` は uppercase。日本語には効かないが、混ざる語で崩れる） */
+.side-head > button.ghost { text-transform: none; letter-spacing: 0; font-size: var(--fs-11); }
+
+/* サイドバーの中の区切り。役割の違う段を切る（見出しの色は薄いので、見出しだけ
+   では段が変わったことが読み取れない） */
+.side-rule {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 20px 0 0;
+}
+
+/* 地図の絵の一覧に出す小さな見本。**入れ物より大きくしない**（1 枚が縦を食うと、
+   数枚あるだけでダイアログがスクロールだらけになる） */
+.map-thumb {
+  width: 56px;
+  height: 40px;
+  object-fit: contain;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* 掴んで動かすための丸。**地図だけの例外**（→ docs/design-notes.md）。
+   **縮小しても押せる大きさを保つ**（当たり判定と同じ理由）。 */
+.rel-map-handle {
+  fill: var(--panel);
+  stroke: var(--accent);
+  stroke-width: 2;
+  cursor: grab;
+  vector-effect: non-scaling-stroke;
+}
+.rel-map-handle:hover,
+.rel-map-handle:focus { fill: var(--accent); outline: none; }
+.rel-map.is-placing { cursor: crosshair; }
+/* 置いている最中の下書き（`installPlacing`）。**押せなくする** ——
+   置いたばかりの点が次の点を遮ると、線を続けて引けなくなる。
+   見た目は本物の形と同じクラスを借りて、点だけ「まだ確定していない」ぶん薄く。 */
+.rel-map-draft { pointer-events: none; }
+.rel-map-draft .rel-map-route,
+.rel-map-draft .rel-map-fill { opacity: 0.75; stroke-dasharray: 6 4; }
+.rel-map-draft-dot { fill: var(--accent); stroke: var(--panel); stroke-width: 2; }
+
+/* 頂点を足す口（線分の中点）。**掴む丸より小さく・薄く** —— 同じ見た目にすると、
+   どれが本物の頂点なのか分からなくなる（数えると点の数が合わない）。 */
+.rel-map-add {
+  fill: var(--panel);
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 3 2;
+  opacity: 0.65;
+  cursor: cell;
+  vector-effect: non-scaling-stroke;
+}
+.rel-map-add:hover { opacity: 1; fill: var(--accent); }
+
+/* 消す口。**乗せた（または焦点が当たった）頂点にだけ出す** —— 常に出すと、
+   頂点の数だけ ✕ が並んで絵が読めなくなるうえ、掴もうとして消す。 */
+.rel-map-drop { display: none; cursor: pointer; }
+.rel-map-vertex:hover .rel-map-drop,
+.rel-map-vertex:focus-within .rel-map-drop { display: block; }
+.rel-map-drop circle { fill: var(--panel); stroke: var(--danger); stroke-width: 2; }
+.rel-map-drop path { stroke: var(--danger); stroke-width: 2; fill: none; }
+.rel-map-drop:hover circle { fill: var(--danger); }
+.rel-map-drop:hover path { stroke: var(--panel); }
+
+/* この語の見方のタブ（用語ページ）。**辞書の見方のタブとは別の列**（あちらは
+   「辞書をどう見るか」、こちらは「この語をどう見るか」）。見出しは動かさず、
+   下の中身だけが入れ替わる */
+.entry-tab-body { margin-top: 4px; }
+/* 用語ページの中に置く図。入れ物の高さは相関図の側が決めるので、ここでは
+   上下の間だけ空ける */
+.entry-graph { margin-top: 12px; }
+
+/* 年表で名指しされた語（用語ページの「辞書の図で見る →」から渡ってきた語）。
+   **周りを暗くしない**ので、目印そのものが見えないと意味が無い —— 枠と地を
+   accent にして、長い年表の中でも一目で分かるようにする（`graph.js` の
+   `spotlight(…, { dim: false })`）。地図は逆に周りを落とす（探し方が違う） */
+.rel-chronicle .rel-node.lit rect {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.rel-chronicle .rel-node.lit text { font-weight: 600; }
+
+/* 用語ページの図タブから辞書の図へ渡る行。**図より前に置く**（うしろだと、
+   背の高い図をスクロールし切らないと見えない）。右寄せにして、図そのものと
+   読み違えないようにする */
+.entry-graph-out { justify-content: flex-end; margin: 8px 0 0; }
+
+/* 公開の下見に出すカード。**貼ったときに出る絵をそのまま見せる**ので、
+   幅だけ入れ物に合わせて縮める（比は 1200x630 のまま svg が保つ）。 */
+.publish-card { margin: 12px 0; border: 1px solid var(--line); border-radius: 10px;
+  overflow: hidden; background: var(--bg-soft, transparent); }
+.publish-card svg { display: block; width: 100%; height: auto; }
+
+/* --- ここから下は公開ページ用の上書き（GlossPop が書き足したもの） --- */
+body { margin: 0; }
+.reader { max-width: 44rem; margin: 0 auto; padding: 2.5rem 1.25rem 6rem; }
+.reader-head { border-bottom: 1px solid var(--border); padding-bottom: .75rem;
+  margin-bottom: 2rem; }
+.reader-head h1 { margin: 0 0 .35rem; }
+.reader-note { color: var(--fg-faint); font-size: var(--fs-12); margin: 0; }
+/* **飛び先の無いリンクを出さない。** 辞書ページはこのサイトに無い（冊子が
+   リンクを張らなかったのと同じ理由 —— 切れたリンクは「その語が無い」に見える）。
+   吹き出しの中の語を辿る道は残っている */
+.pop-foot a, .pop-item-link { display: none; }
+.pop-foot { justify-content: flex-end; }
